@@ -1,0 +1,3 @@
+[submodule "tinyfsm"]
+	path = tinyfsm
+	url = https://github.com/digint/tinyfsm
