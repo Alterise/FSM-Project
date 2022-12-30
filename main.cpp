@@ -33,11 +33,12 @@ enum class Object {
 
 class Playground {
 private:
-    int m_Padding;
+    float m_Padding;
     int m_Height;
     int m_Width;
     std::shared_ptr<RenderWindow> m_window;
-    RectangleShape shape;
+    RectangleShape m_shape;
+    std::vector<RectangleShape> m_staticShapes;
 
     std::vector<std::vector<Object>> m_Data;
 public:
@@ -48,13 +49,31 @@ public:
         m_Width = 10;
         m_Data = std::vector<std::vector<Object>>(m_Height, std::vector<Object>(m_Width, Object::NOTHING));
         Vector2f windowSize = static_cast<const Vector2f>(m_window->getSize());
-        shape = RectangleShape(static_cast<const Vector2f>(windowSize - Vector2f(m_Padding * 2, m_Padding * 2)));
-        shape.setFillColor(Color(240,230,140));
-        shape.setPosition(Vector2f(m_Padding, m_Padding));
+        m_shape = RectangleShape(static_cast<const Vector2f>(windowSize - Vector2f(m_Padding * 2, m_Padding * 2)));
+        m_shape.setFillColor(Color(240, 230, 140));
+        m_shape.setPosition(Vector2f(m_Padding, m_Padding));
+        float lineWidth = 5;
+        auto playgroundSize = m_shape.getSize();
+        for (int i = 0; i <= m_Height; ++i) {
+            auto line = RectangleShape(Vector2f(playgroundSize.x + lineWidth / 2, lineWidth));
+            line.setPosition(m_Padding, m_Padding - lineWidth / 5 + i * (playgroundSize.y / m_Height));
+            line.setFillColor(Color(0, 0, 0));
+            m_staticShapes.push_back(line);
+        }
+
+        for (int i = 0; i <= m_Width; ++i) {
+            auto line = RectangleShape(Vector2f(lineWidth, playgroundSize.y + lineWidth / 2));
+            line.setPosition(m_Padding - lineWidth / 5 + i * (playgroundSize.x / m_Height), m_Padding);
+            line.setFillColor(Color(0, 0, 0));
+            m_staticShapes.push_back(line);
+        }
     }
 
     void draw() {
-        m_window->draw(shape);
+        m_window->draw(m_shape);
+        for (const auto &shape: m_staticShapes) {
+            m_window->draw(shape);
+        }
     }
 };
 
