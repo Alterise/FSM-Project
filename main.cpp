@@ -3,119 +3,127 @@
 #include <chrono>
 #include <thread>
 #include <memory>
+#include <cmath>
 
-using namespace sf;
+sf::Color backgroundColor = sf::Color(104,202,0);
+std::chrono::milliseconds dt = std::chrono::milliseconds(10);
 
-Color backgroundColor = Color(150, 250, 150);
+//void move(const std::shared_ptr<sf::RenderWindow>& window, sf::Shape& object, const sf::Vector2<float>& shift,
+//          const std::chrono::milliseconds& duration = std::chrono::milliseconds(500)) {
+//    auto startTime = std::chrono::steady_clock::now();
+//    auto framesCount = duration / std::chrono::milliseconds(1000 / 60);
+//    auto frameDuration = duration / framesCount;
+//    auto frameShift = shift / static_cast<float>(framesCount);
+//    for (int i = 0; i < framesCount; ++i) {
+//        object.setPosition(object.getPosition() + frameShift);
+//        window->clear(backgroundColor);
+//        window->draw(object);
+//        window->display();
+//        std::this_thread::sleep_for(frameDuration);
+//    }
+//}
 
-// TODO: добавить отрисовку внешних фигур
-void move(const std::shared_ptr<RenderWindow>& window, Shape& object, const sf::Vector2<float>& shift,
-          const std::chrono::milliseconds& duration = std::chrono::milliseconds(500)) {
-    auto startTime = std::chrono::steady_clock::now();
-    auto framesCount = duration / std::chrono::milliseconds(1000 / 60);
-    auto frameDuration = duration / framesCount;
-    auto frameShift = shift / static_cast<float>(framesCount);
-    for (int i = 0; i < framesCount; ++i) {
-        object.setPosition(object.getPosition() + frameShift);
-        window->clear(backgroundColor);
-        window->draw(object);
-        window->display();
-        std::this_thread::sleep_for(frameDuration);
-    }
-}
-
-enum class Object {
-    NOTHING,
-    CONTAINER,
-    GUARD,
-    OFFENDER
-};
-
-class Playground {
+class Character{
 private:
-    float m_Padding;
-    int m_Height;
-    int m_Width;
-    std::shared_ptr<RenderWindow> m_window;
-    RectangleShape m_shape;
-    std::vector<RectangleShape> m_staticShapes;
-
-    std::vector<std::vector<Object>> m_Data;
+    sf::CircleShape m_body;
+    float m_size;
+    sf::Vector2f m_destination;
+    sf::Vector2f m_position;
+    float m_speed;
+    float m_tickSpeed;
 public:
-    explicit Playground(std::shared_ptr<RenderWindow>& window) {
-        m_window = window;
-        m_Padding = 50;
-        m_Height = 10;
-        m_Width = 10;
-        m_Data = std::vector<std::vector<Object>>(m_Height, std::vector<Object>(m_Width, Object::NOTHING));
-        Vector2f windowSize = static_cast<const Vector2f>(m_window->getSize());
-        m_shape = RectangleShape(static_cast<const Vector2f>(windowSize - Vector2f(m_Padding * 2, m_Padding * 2)));
-        m_shape.setFillColor(Color(240, 230, 140));
-        m_shape.setPosition(Vector2f(m_Padding, m_Padding));
-        float lineWidth = 5;
-        auto playgroundSize = m_shape.getSize();
-        for (int i = 0; i <= m_Height; ++i) {
-            auto line = RectangleShape(Vector2f(playgroundSize.x + lineWidth / 2, lineWidth));
-            line.setPosition(m_Padding, m_Padding - lineWidth / 5 + i * (playgroundSize.y / m_Height));
-            line.setFillColor(Color(0, 0, 0));
-            m_staticShapes.push_back(line);
-        }
-
-        for (int i = 0; i <= m_Width; ++i) {
-            auto line = RectangleShape(Vector2f(lineWidth, playgroundSize.y + lineWidth / 2));
-            line.setPosition(m_Padding - lineWidth / 5 + i * (playgroundSize.x / m_Height), m_Padding);
-            line.setFillColor(Color(0, 0, 0));
-            m_staticShapes.push_back(line);
-        }
+    Character() {
+        m_size = 20.f;
+        m_body = sf::CircleShape(m_size / 2);
+        m_position = sf::Vector2f(0, 0);
+        m_body.setPosition(m_position);
+        m_body.setFillColor(sf::Color(0, 0, 0));
+        m_speed = 100;
+        m_tickSpeed = m_speed / (std::chrono::seconds(1) / std::chrono::milliseconds(10));
+        m_destination = m_position;
     }
 
-    void draw() {
-        m_window->draw(m_shape);
-        for (const auto &shape: m_staticShapes) {
-            m_window->draw(shape);
-        }
+    void setSpeed(float speed) {
+        m_speed = speed;
+        m_tickSpeed = m_speed / (std::chrono::seconds(1) / std::chrono::milliseconds(10));
     }
+
+    void setSize(float size) {
+        m_size = size;
+        m_body.setRadius(m_size / 2);
+    }
+
+    void setPosition(const sf::Vector2f& position) {
+        m_position = position;
+        m_body.setPosition(m_position);
+        m_destination = m_position;
+    }
+
+    void setDestination(const sf::Vector2f& destination) {
+        m_destination = destination;
+    }
+
+    void setColor(const sf::Color& color) {
+        m_body.setFillColor(color);
+    }
+
+    float getSize() const {
+        return m_size;
+    }
+
+    void move() {
+        auto distance = m_destination - m_position;
+        auto absDistance = std::sqrt(distance.x * distance.x + distance.y * distance.y);
+        if (absDistance <= 1) {
+            return;
+        }
+        m_position += distance * (m_tickSpeed / absDistance);
+        m_body.setPosition(m_position);
+    }
+
+    const sf::CircleShape& getBody() {
+        return m_body;
+    }
+private:
+
 };
 
 int main()
 {
-    std::shared_ptr<RenderWindow> window(new RenderWindow(VideoMode(800, 800), "FSM Coursework"));
-    CircleShape circle(50.f);
-    auto pg = Playground(window);
-    while (window->isOpen())
+    std::shared_ptr<sf::RenderWindow> window(new sf::RenderWindow(sf::VideoMode(800, 800), "FSM Coursework"));
+    float areaPadding = 100;
+    auto area = sf::RectangleShape(static_cast<const sf::Vector2f>(
+            static_cast<const sf::Vector2f>(window->getSize()) - sf::Vector2f(areaPadding * 2, areaPadding * 2)));
+    area.setPosition(sf::Vector2f(areaPadding, areaPadding));
+    area.setFillColor(sf::Color(194, 178, 128));
+    Character guard;
+    guard.setPosition(sf::Vector2f(120, 120));
+    guard.setColor(sf::Color(200, 0, 0));
+    guard.setSpeed(200);
+    while(window->isOpen())
     {
         auto startTime = std::chrono::steady_clock::now();
-        Event event{};
-        while (window->pollEvent(event))
+        sf::Event event{};
+        while(window->pollEvent(event))
         {
-            if (event.type == Event::Closed) {
+            if(event.type == sf::Event::Closed) {
                 window->close();
+            }
+
+            if(event.type == sf::Event::MouseButtonPressed) {
+                auto guardSize = guard.getSize();
+                guard.setDestination(sf::Vector2f(event.mouseButton.x - guardSize / 2, event.mouseButton.y - guardSize / 2));
             }
         }
 
         window->clear(backgroundColor);
 
-        if (event.type == Event::TextEntered) {
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-                move(window, circle, Vector2<float>{0, -50});
-            }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-                move(window, circle, Vector2<float>{-50, 0});
-            }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-                move(window, circle, Vector2<float>{0, 50});
-            }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-                move(window, circle, Vector2<float>{50, 0});
-            }
-        }
-
-        circle.setFillColor(Color(200, 0, 0));
-
-        pg.draw();
-        window->draw(circle);
+        window->draw(area);
+        guard.move();
+        window->draw(guard.getBody());
 
         window->display();
+        std::this_thread::sleep_until(startTime + dt);
     }
 
     return 0;

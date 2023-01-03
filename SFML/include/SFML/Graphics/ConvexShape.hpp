@@ -36,7 +36,7 @@
 namespace sf
 {
 ////////////////////////////////////////////////////////////
-/// \brief Specialized shape representing a convex polygon
+/// \brief Specialized m_shape representing a convex polygon
 ///
 ////////////////////////////////////////////////////////////
 class SFML_GRAPHICS_API ConvexShape : public Shape
@@ -54,7 +54,7 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Set the number of points of the polygon
     ///
-    /// \a count must be greater than 2 to define a valid shape.
+    /// \a count must be greater than 2 to define a valid m_shape.
     ///
     /// \param count New number of points of the polygon
     ///
@@ -94,7 +94,7 @@ public:
     /// \brief Get the position of a point
     ///
     /// The returned point is in local coordinates, that is,
-    /// the shape's transforms (position, rotation, scale) are
+    /// the m_shape's transforms (position, rotation, scale) are
     /// not taken into account.
     /// The result is undefined if \a index is out of the valid range.
     ///
@@ -129,10 +129,10 @@ private:
 /// (position, rotation, scale, bounds, ...) as well as the
 /// functions of sf::Shape (outline, color, texture, ...).
 ///
-/// It is important to keep in mind that a convex shape must
+/// It is important to keep in mind that a convex m_shape must
 /// always be... convex, otherwise it may not be drawn correctly.
 /// Moreover, the points must be defined in order; using a random
-/// order would result in an incorrect shape.
+/// order would result in an incorrect m_shape.
 ///
 /// Usage example:
 /// \code

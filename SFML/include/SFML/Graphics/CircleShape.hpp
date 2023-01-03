@@ -35,7 +35,7 @@
 namespace sf
 {
 ////////////////////////////////////////////////////////////
-/// \brief Specialized shape representing a circle
+/// \brief Specialized m_shape representing a circle
 ///
 ////////////////////////////////////////////////////////////
 class SFML_GRAPHICS_API CircleShape : public Shape
@@ -95,13 +95,13 @@ public:
     /// \brief Get a point of the circle
     ///
     /// The returned point is in local coordinates, that is,
-    /// the shape's transforms (position, rotation, scale) are
+    /// the m_shape's transforms (position, rotation, scale) are
     /// not taken into account.
     /// The result is undefined if \a index is out of the valid range.
     ///
     /// \param index Index of the point to get, in range [0 .. getPointCount() - 1]
     ///
-    /// \return index-th point of the shape
+    /// \return index-th point of the m_shape
     ///
     ////////////////////////////////////////////////////////////
     virtual Vector2f getPoint(std::size_t index) const;
@@ -146,7 +146,7 @@ private:
 /// triangles to use, and therefore defines the quality of the circle.
 ///
 /// The number of points can also be used for another purpose; with
-/// small numbers you can create any regular polygon shape:
+/// small numbers you can create any regular polygon m_shape:
 /// equilateral triangle, square, pentagon, hexagon, ...
 ///
 /// \see sf::Shape, sf::RectangleShape, sf::ConvexShape

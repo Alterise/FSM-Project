@@ -52,17 +52,17 @@ public:
     virtual ~Shape();
 
     ////////////////////////////////////////////////////////////
-    /// \brief Change the source texture of the shape
+    /// \brief Change the source texture of the m_shape
     ///
     /// The \a texture argument refers to a texture that must
-    /// exist as long as the shape uses it. Indeed, the shape
+    /// exist as long as the m_shape uses it. Indeed, the m_shape
     /// doesn't store its own copy of the texture, but rather keeps
     /// a pointer to the one that you passed to this function.
-    /// If the source texture is destroyed and the shape tries to
+    /// If the source texture is destroyed and the m_shape tries to
     /// use it, the behavior is undefined.
     /// \a texture can be NULL to disable texturing.
     /// If \a resetRect is true, the TextureRect property of
-    /// the shape is automatically adjusted to the size of the new
+    /// the m_shape is automatically adjusted to the size of the new
     /// texture. If it is false, the texture rect is left unchanged.
     ///
     /// \param texture   New texture
@@ -74,7 +74,7 @@ public:
     void setTexture(const Texture* texture, bool resetRect = false);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Set the sub-rectangle of the texture that the shape will display
+    /// \brief Set the sub-rectangle of the texture that the m_shape will display
     ///
     /// The texture rect is useful when you don't want to display
     /// the whole texture, but rather a part of it.
@@ -88,16 +88,16 @@ public:
     void setTextureRect(const IntRect& rect);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Set the fill color of the shape
+    /// \brief Set the fill color of the m_shape
     ///
-    /// This color is modulated (multiplied) with the shape's
-    /// texture if any. It can be used to colorize the shape,
+    /// This color is modulated (multiplied) with the m_shape's
+    /// texture if any. It can be used to colorize the m_shape,
     /// or change its global opacity.
     /// You can use sf::Color::Transparent to make the inside of
-    /// the shape transparent, and have the outline alone.
-    /// By default, the shape's fill color is opaque white.
+    /// the m_shape transparent, and have the outline alone.
+    /// By default, the m_shape's fill color is opaque white.
     ///
-    /// \param color New color of the shape
+    /// \param color New color of the m_shape
     ///
     /// \see getFillColor, setOutlineColor
     ///
@@ -105,11 +105,11 @@ public:
     void setFillColor(const Color& color);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Set the outline color of the shape
+    /// \brief Set the outline color of the m_shape
     ///
-    /// By default, the shape's outline color is opaque white.
+    /// By default, the m_shape's outline color is opaque white.
     ///
-    /// \param color New outline color of the shape
+    /// \param color New outline color of the m_shape
     ///
     /// \see getOutlineColor, setFillColor
     ///
@@ -117,10 +117,10 @@ public:
     void setOutlineColor(const Color& color);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Set the thickness of the shape's outline
+    /// \brief Set the thickness of the m_shape's outline
     ///
     /// Note that negative values are allowed (so that the outline
-    /// expands towards the center of the shape), and using zero
+    /// expands towards the center of the m_shape), and using zero
     /// disables the outline.
     /// By default, the outline thickness is 0.
     ///
@@ -132,13 +132,13 @@ public:
     void setOutlineThickness(float thickness);
 
     ////////////////////////////////////////////////////////////
-    /// \brief Get the source texture of the shape
+    /// \brief Get the source texture of the m_shape
     ///
-    /// If the shape has no source texture, a NULL pointer is returned.
+    /// If the m_shape has no source texture, a NULL pointer is returned.
     /// The returned pointer is const, which means that you can't
     /// modify the texture when you retrieve it with this function.
     ///
-    /// \return Pointer to the shape's texture
+    /// \return Pointer to the m_shape's texture
     ///
     /// \see setTexture
     ///
@@ -146,9 +146,9 @@ public:
     const Texture* getTexture() const;
 
     ////////////////////////////////////////////////////////////
-    /// \brief Get the sub-rectangle of the texture displayed by the shape
+    /// \brief Get the sub-rectangle of the texture displayed by the m_shape
     ///
-    /// \return Texture rectangle of the shape
+    /// \return Texture rectangle of the m_shape
     ///
     /// \see setTextureRect
     ///
@@ -156,9 +156,9 @@ public:
     const IntRect& getTextureRect() const;
 
     ////////////////////////////////////////////////////////////
-    /// \brief Get the fill color of the shape
+    /// \brief Get the fill color of the m_shape
     ///
-    /// \return Fill color of the shape
+    /// \return Fill color of the m_shape
     ///
     /// \see setFillColor
     ///
@@ -166,9 +166,9 @@ public:
     const Color& getFillColor() const;
 
     ////////////////////////////////////////////////////////////
-    /// \brief Get the outline color of the shape
+    /// \brief Get the outline color of the m_shape
     ///
-    /// \return Outline color of the shape
+    /// \return Outline color of the m_shape
     ///
     /// \see setOutlineColor
     ///
@@ -176,9 +176,9 @@ public:
     const Color& getOutlineColor() const;
 
     ////////////////////////////////////////////////////////////
-    /// \brief Get the outline thickness of the shape
+    /// \brief Get the outline thickness of the m_shape
     ///
-    /// \return Outline thickness of the shape
+    /// \return Outline thickness of the m_shape
     ///
     /// \see setOutlineThickness
     ///
@@ -186,9 +186,9 @@ public:
     float getOutlineThickness() const;
 
     ////////////////////////////////////////////////////////////
-    /// \brief Get the total number of points of the shape
+    /// \brief Get the total number of points of the m_shape
     ///
-    /// \return Number of points of the shape
+    /// \return Number of points of the m_shape
     ///
     /// \see getPoint
     ///
@@ -196,16 +196,16 @@ public:
     virtual std::size_t getPointCount() const = 0;
 
     ////////////////////////////////////////////////////////////
-    /// \brief Get a point of the shape
+    /// \brief Get a point of the m_shape
     ///
     /// The returned point is in local coordinates, that is,
-    /// the shape's transforms (position, rotation, scale) are
+    /// the m_shape's transforms (position, rotation, scale) are
     /// not taken into account.
     /// The result is undefined if \a index is out of the valid range.
     ///
     /// \param index Index of the point to get, in range [0 .. getPointCount() - 1]
     ///
-    /// \return index-th point of the shape
+    /// \return index-th point of the m_shape
     ///
     /// \see getPointCount
     ///
@@ -233,7 +233,7 @@ public:
     /// that it takes into account the transformations (translation,
     /// rotation, scale, ...) that are applied to the entity.
     /// In other words, this function returns the bounds of the
-    /// shape in the global 2D world's coordinate system.
+    /// m_shape in the global 2D world's coordinate system.
     ///
     /// This function does not necessarily return the \a minimal
     /// bounding rectangle. It merely ensures that the returned
@@ -256,10 +256,10 @@ protected:
     Shape();
 
     ////////////////////////////////////////////////////////////
-    /// \brief Recompute the internal geometry of the shape
+    /// \brief Recompute the internal geometry of the m_shape
     ///
     /// This function must be called by the derived class everytime
-    /// the shape's points change (i.e. the result of either
+    /// the m_shape's points change (i.e. the result of either
     /// getPointCount or getPoint is different).
     ///
     ////////////////////////////////////////////////////////////
@@ -268,7 +268,7 @@ protected:
 private:
 
     ////////////////////////////////////////////////////////////
-    /// \brief Draw the shape to a render target
+    /// \brief Draw the m_shape to a render target
     ///
     /// \param target Render target to draw to
     /// \param states Current render states
@@ -305,15 +305,15 @@ private:
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
-    const Texture* m_texture;          ///< Texture of the shape
+    const Texture* m_texture;          ///< Texture of the m_shape
     IntRect        m_textureRect;      ///< Rectangle defining the area of the source texture to display
     Color          m_fillColor;        ///< Fill color
     Color          m_outlineColor;     ///< Outline color
-    float          m_outlineThickness; ///< Thickness of the shape's outline
+    float          m_outlineThickness; ///< Thickness of the m_shape's outline
     VertexArray    m_vertices;         ///< Vertex array containing the fill geometry
     VertexArray    m_outlineVertices;  ///< Vertex array containing the outline geometry
     FloatRect      m_insideBounds;     ///< Bounding rectangle of the inside (fill)
-    FloatRect      m_bounds;           ///< Bounding rectangle of the whole shape (outline + fill)
+    FloatRect      m_bounds;           ///< Bounding rectangle of the whole m_shape (outline + fill)
 };
 
 } // namespace sf
@@ -327,13 +327,13 @@ private:
 /// \ingroup graphics
 ///
 /// sf::Shape is a drawable class that allows to define and
-/// display a custom convex shape on a render target.
+/// display a custom convex m_shape on a render target.
 /// It's only an abstract base, it needs to be specialized for
 /// concrete types of shapes (circle, rectangle, convex polygon,
 /// star, ...).
 ///
 /// In addition to the attributes provided by the specialized
-/// shape classes, a shape always has the following attributes:
+/// m_shape classes, a m_shape always has the following attributes:
 /// \li a texture
 /// \li a texture rectangle
 /// \li a fill color
@@ -345,10 +345,10 @@ private:
 /// \li the fill/outline colors can be sf::Color::Transparent
 /// \li the outline thickness can be zero
 ///
-/// You can write your own derived shape class, there are only
+/// You can write your own derived m_shape class, there are only
 /// two virtual functions to override:
-/// \li getPointCount must return the number of points of the shape
-/// \li getPoint must return the points of the shape
+/// \li getPointCount must return the number of points of the m_shape
+/// \li getPoint must return the points of the m_shape
 ///
 /// \see sf::RectangleShape, sf::CircleShape, sf::ConvexShape, sf::Transformable
 ///
