@@ -6,10 +6,12 @@
 class GuardFSM : public tinyfsm::Fsm<GuardFSM>
 {
 public:
-    void react(tinyfsm::Event const &) { };
+    void            react(const tinyfsm::Event&) { };
 
-    virtual void react(EyeContact const &);
+    virtual void    react(const NewTick&);
+    virtual void    react(const EyeContact&);
+    virtual void    react(const Noise&);
 
-    virtual void entry(void) { };
-    void         exit(void)  { };
+    void            entry() { };
+    void            exit()  { };
 };
