@@ -4,16 +4,25 @@
 #include <SFML/Graphics.hpp>
 #include <Character.h>
 
-struct EyeContact   : tinyfsm::Event {
+struct EyeContact       : tinyfsm::Event {
     std::shared_ptr<Character> guard;
     std::shared_ptr<Character> intruder;
 };
 
-struct Noise        : tinyfsm::Event {
+struct Noise            : tinyfsm::Event {
     std::shared_ptr<Character> guard;
     sf::Vector2f location;
 };
 
-struct NewTick      : tinyfsm::Event {
+struct NextPatrolSide   : tinyfsm::Event {
+    std::shared_ptr<Character> guard;
+};
+
+struct CamerasChecked   : tinyfsm::Event {
+    std::shared_ptr<Character> guard;
+    std::shared_ptr<Character> intruder;
+};
+
+struct NewTick          : tinyfsm::Event {
     std::shared_ptr<Character> guard;
 };

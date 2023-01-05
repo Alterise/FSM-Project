@@ -15,15 +15,35 @@ class Arrest;
 //
 
 class Patrolling : public GuardFSM {
-// TODO: прикрутить изменение направления патрулирования
+    int patrolSide = 0;
+    int patrolCount = 0;
+
+    void react(NextPatrolSide const & e) override {
+        switch (patrolSide) {
+            case 0: {
+                e.guard->setDestination(sf::Vector2f(150, 150));
+            }
+            case 1: {
+                e.guard->setDestination(sf::Vector2f(650, 150));
+            }
+            case 2: {
+                e.guard->setDestination(sf::Vector2f(650, 650));
+            }
+            case 3: {
+                e.guard->setDestination(sf::Vector2f(150, 650));
+                patrolCount = (patrolCount + 1) % 2;
+                e.guard->setState(State::DONE);
+            }
+        }
+
+        patrolSide = (patrolSide + 1) % 4;
+    };
+
     void react(NewTick const & e) override {
         if (e.guard->getState() == State::DONE) {
-            if (e.guard->getPatrolCount() % 2 == 0) {
-                e.guard->setState(State::IN_PROGRESS);
+            e.guard->setState(State::IN_PROGRESS);
+            if (patrolCount == 0) {
                 transit<CamerasCheck>();
-            } else {
-                e.guard->incrementPatrolCount();
-                e.guard->setState(State::IN_PROGRESS);
             }
         }
     };
@@ -88,6 +108,23 @@ class Examination : public GuardFSM {
 //
 
 class CamerasCheck : public GuardFSM {
+    void react(NewTick const & e) override {
+        if (e.guard->getState() == State::DONE) {
+            e.guard->setState(State::IN_PROGRESS);
+            // ???
+            sendEvent(CamerasChecked());
+        }
+    };
+
+    void react(CamerasChecked const & e) override {
+        e.guard->setState(State::DONE);
+        if (e.intruder != nullptr) {
+            e.guard->setTarget(e.intruder->getBody());
+            transit<Chase>();
+        } else {
+            transit<Patrolling>();
+        }
+    };
 };
 
 // ----------------------------------------------------------------------------
@@ -103,5 +140,11 @@ void GuardFSM::react(const Noise &) {
 }
 
 void GuardFSM::react(const NewTick &) { }
+
+void GuardFSM::react(const NextPatrolSide &) { }
+
+void GuardFSM::react(const CamerasChecked &) {
+    std::cout << "I've checked all cameras" << std::endl;
+}
 
 FSM_INITIAL_STATE(GuardFSM, Patrolling)

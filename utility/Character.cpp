@@ -2,10 +2,14 @@
 
 Character::Character() {
     m_size = 20.f;
-    m_body = sf::CircleShape(m_size / 2);
     m_position = sf::Vector2f(0, 0);
+    m_body = sf::CircleShape(m_size / 2);
     m_body.setPosition(m_position);
     m_body.setFillColor(sf::Color(0, 0, 0));
+
+    m_eyeSight = sf::CircleShape(100.f);
+    m_eyeSight.setPosition(m_position);
+    m_eyeSight.setFillColor(sf::Color(0, 0, 0, 50));
     m_speed = 100;
     m_tickSpeed = m_speed / (std::chrono::seconds(1) / std::chrono::milliseconds(10));
     m_destination = m_position;
@@ -38,6 +42,7 @@ void Character::resetTarget() {
 
 void Character::setColor(const sf::Color& color) {
     m_body.setFillColor(color);
+    m_eyeSight.setFillColor(sf::Color(color.r, color.g, color.b, 50));
 }
 
 float Character::getSize() const {
@@ -45,6 +50,7 @@ float Character::getSize() const {
 }
 
 void Character::move() {
+    m_eyeSight.setPosition(m_body.getPosition() - sf::Vector2f(m_eyeSight.getRadius() - m_size / 2, m_eyeSight.getRadius() - m_size / 2));
     if (m_target != nullptr) {
         m_destination = m_target->getPosition();
     }
@@ -66,17 +72,17 @@ void Character::setSize(float size) {
     m_body.setRadius(m_size / 2);
 }
 
-int Character::getPatrolCount() const {
-    return m_patrolCount;
-}
+//int Character::getPatrolCount() const {
+//    return m_patrolCount;
+//}
 
 State Character::getState() const {
     return m_state;
 }
 
-void Character::incrementPatrolCount() {
-    m_patrolCount++;
-}
+//void Character::incrementPatrolCount() {
+//    m_patrolCount++;
+//}
 
 void Character::setState(const State state) {
     m_state = state;
@@ -88,4 +94,9 @@ std::shared_ptr<sf::CircleShape> Character::getTarget() const {
 
 void Character::setDestinationArrest() {
     setDestination(sf::Vector2f(750, 650));
+}
+
+void Character::drawSelf(const std::shared_ptr<sf::RenderWindow>& window) {
+    window->draw(m_body);
+    window->draw(m_eyeSight);
 }

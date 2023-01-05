@@ -9,6 +9,9 @@ public:
     void            react(const tinyfsm::Event&) { };
 
     virtual void    react(const NewTick&);
+
+    virtual void    react(const NextPatrolSide&);
+    virtual void    react(const CamerasChecked&);
     virtual void    react(const EyeContact&);
     virtual void    react(const Noise&);
 

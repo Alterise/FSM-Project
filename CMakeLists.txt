@@ -3,7 +3,7 @@ project(FSM)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(FSM main.cpp FSM_impl/Guard.cpp utility/Character.cpp)
+add_executable(FSM main.cpp FSM_impl/guard.cpp utility/Character.cpp)
 
 include_directories(headers ./SFML/include ./tinyfsm/include ./utility ./FSM_impl)
 

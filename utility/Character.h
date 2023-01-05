@@ -10,13 +10,14 @@
 class Character{
 private:
     sf::CircleShape m_body;
+    sf::CircleShape m_eyeSight;
     float m_size;
     sf::Vector2f m_destination;
     sf::Vector2f m_position;
     float m_speed;
     float m_tickSpeed;
     std::shared_ptr<sf::CircleShape> m_target;
-    int m_patrolCount;
+//    int m_patrolCount;
     State m_state;
 
 public:
@@ -35,11 +36,12 @@ public:
     float getSize() const;
     std::shared_ptr<sf::CircleShape> getTarget() const;
     State getState() const;
-    int getPatrolCount() const;
-    void incrementPatrolCount();
+//    int getPatrolCount() const;
+//    void incrementPatrolCount();
     const sf::CircleShape& getBody();
 
     void move();
+    void drawSelf(const std::shared_ptr<sf::RenderWindow>& window);
 private:
 
 };
