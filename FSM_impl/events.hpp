@@ -23,6 +23,20 @@ struct CamerasChecked   : tinyfsm::Event {
     std::shared_ptr<Character> intruder;
 };
 
+struct NoiseChecked   : tinyfsm::Event {
+    std::shared_ptr<Character> guard;
+    std::shared_ptr<sf::CircleShape> noise;
+};
+
+struct IntruderArrested : tinyfsm::Event {
+    std::shared_ptr<Character> guard;
+};
+
+struct IntruderLost : tinyfsm::Event {
+    std::shared_ptr<Character> guard;
+};
+
 struct NewTick          : tinyfsm::Event {
     std::shared_ptr<Character> guard;
+    std::shared_ptr<Character> intruder;
 };

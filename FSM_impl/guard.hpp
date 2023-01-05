@@ -12,6 +12,9 @@ public:
 
     virtual void    react(const NextPatrolSide&);
     virtual void    react(const CamerasChecked&);
+    virtual void    react(const NoiseChecked&);
+    virtual void    react(const IntruderArrested&);
+    virtual void    react(const IntruderLost&);
     virtual void    react(const EyeContact&);
     virtual void    react(const Noise&);
 

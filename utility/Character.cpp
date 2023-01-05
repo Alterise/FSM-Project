@@ -7,6 +7,22 @@ bool isNear(const Character& character, sf::Vector2f location) {
     return absDistance <= 2;
 }
 
+bool isNearNoise(const Character& character, sf::Vector2f location) {
+    auto size = character.getSize();
+    auto distance = (character.getPosition() + sf::Vector2f(size / 2, size / 2)) - (location + sf::Vector2f(30, 30));
+    auto absDistance = std::sqrt(distance.x * distance.x + distance.y * distance.y);
+    return absDistance <= 2;
+}
+
+bool isInEyeSight(const Character& character1, const Character& character2) {
+    auto size1 = character2.getSize();
+    auto size2 = character2.getSize();
+    auto distance = (character1.getPosition() - sf::Vector2f(size1 / 2, size1 / 2)) -
+            character2.getPosition() + sf::Vector2f(size2 / 2, size2 / 2);
+    auto absDistance = std::sqrt(distance.x * distance.x + distance.y * distance.y);
+    return absDistance <= 100;
+}
+
 bool onTerritory(const Character& character) {
     auto size = character.getSize();
     auto position = character.getPosition() + sf::Vector2f(size / 2, size / 2);
@@ -31,7 +47,8 @@ Character::Character() {
     m_tickSpeed = m_speed / (std::chrono::seconds(1) / std::chrono::milliseconds(10));
     m_destination = m_position;
     m_target = nullptr;
-    m_state = State::DONE;
+    m_binded = nullptr;
+    m_state = State::GUARD_DONE;
 }
 
 void Character::setSpeed(float speed) {
@@ -49,12 +66,25 @@ void Character::setDestination(const sf::Vector2f& destination) {
     m_destination = destination - sf::Vector2f(m_size / 2, m_size / 2);
 }
 
-void Character::setTarget(const sf::CircleShape& target) {
-    m_target = std::make_shared<sf::CircleShape>(target);
+void Character::setTarget(const std::shared_ptr<Character>& target) {
+    m_target = target;
 }
 
 void Character::resetTarget() {
     m_target = nullptr;
+}
+
+void Character::setBinded(const std::shared_ptr<Character>& binded) {
+    m_binded = binded;
+}
+
+void Character::resetBinded() {
+    m_binded = nullptr;
+}
+
+void Character::resetPatrol() {
+    m_patrolCount = 0;
+    m_patrolSide = 0;
 }
 
 void Character::setColor(const sf::Color& color) {
@@ -73,11 +103,14 @@ void Character::move() {
     }
     auto distance = m_destination - m_position;
     auto absDistance = std::sqrt(distance.x * distance.x + distance.y * distance.y);
-    if (absDistance <= 1) {
+    if (absDistance <= 1.5) {
         return;
     }
     m_position += distance * (m_tickSpeed / absDistance);
     m_body.setPosition(m_position);
+    if (m_binded != nullptr) {
+        m_binded->m_body.setPosition(m_position + sf::Vector2f(m_size / 2, -m_size / 2));
+    }
 }
 
 const sf::CircleShape& Character::getBody() {
@@ -113,12 +146,8 @@ void Character::setState(const State state) {
     m_state = state;
 }
 
-std::shared_ptr<sf::CircleShape> Character::getTarget() const {
+std::shared_ptr<Character> Character::getTarget() const {
     return m_target;
-}
-
-void Character::setDestinationArrest() {
-    setDestination(sf::Vector2f(750, 650));
 }
 
 void Character::drawSelf(const std::shared_ptr<sf::RenderWindow>& window) {

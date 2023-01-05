@@ -1,6 +1,9 @@
 #pragma once
 
 enum class State {
-    IN_PROGRESS,
-    DONE
+    GUARD_IN_PROGRESS,
+    GUARD_DONE,
+    INTRUDER_ARRESTING,
+    INTRUDER_CHASING,
+    INSTRUDER_FREE
 };

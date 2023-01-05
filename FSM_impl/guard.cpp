@@ -32,7 +32,7 @@ class Patrolling : public GuardFSM {
             case 3: {
                 e.guard->setDestination(sf::Vector2f(150, 650));
                 e.guard->incrementPatrolCount();
-                e.guard->setState(State::DONE);
+                e.guard->setState(State::GUARD_DONE);
                 break;
             }
         }
@@ -40,7 +40,7 @@ class Patrolling : public GuardFSM {
     };
 
     void react(NewTick const & e) override {
-        if (e.guard->getState() == State::DONE) {
+        if (e.guard->getState() == State::GUARD_DONE) {
             if (e.guard->getPatrolCount() == 1) {
                 e.guard->setDestination(sf::Vector2f(50, 650));
                 transit<CamerasCheck>();
@@ -49,15 +49,16 @@ class Patrolling : public GuardFSM {
     };
 
     void react(EyeContact const & e) override {
-        e.guard->setTarget(e.intruder->getBody());
-        e.guard->setState(State::IN_PROGRESS);
+        e.guard->setTarget(e.intruder);
+        e.guard->setState(State::GUARD_DONE);
         e.guard->setSpeed(200);
+        e.guard->resetPatrol();
         transit<Chase>();
     }
 
     void react(Noise const & e) override {
         e.guard->setDestination(e.location);
-        e.guard->setState(State::IN_PROGRESS);
+        e.guard->setState(State::GUARD_IN_PROGRESS);
         transit<Examination>();
     };
 };
@@ -69,19 +70,25 @@ class Patrolling : public GuardFSM {
 
 class Chase : public GuardFSM {
     void react(NewTick const & e) override {
-        if (e.guard->getState() == State::DONE) {
-            e.guard->setState(State::IN_PROGRESS);
+        auto distance = e.guard->getBody().getPosition() - e.guard->getTarget()->getPosition();
+        auto absDistance = std::sqrt(distance.x * distance.x + distance.y * distance.y);
+        if (absDistance < e.guard->getSize() / 2) {
+            e.guard->resetTarget();
+            e.guard->setDestination(sf::Vector2f(750, 650));
+            e.guard->setState(State::GUARD_IN_PROGRESS);
             e.guard->setSpeed(100);
+            e.intruder->setState(State::INTRUDER_ARRESTING);
+            e.guard->setBinded(e.intruder);
             transit<Arrest>();
-        } else {
-            auto distance = e.guard->getBody().getPosition() - e.guard->getTarget()->getPosition();
-            auto absDistance = std::sqrt(distance.x * distance.x + distance.y * distance.y);
-            if (absDistance < e.guard->getSize() / 2) {
-                e.guard->resetTarget();
-                e.guard->setDestinationArrest();
-                e.guard->setState(State::DONE);
-            }
         }
+    };
+
+    void react(IntruderLost const & e) override {
+        e.guard->resetTarget();
+        e.guard->setDestination(sf::Vector2f(150, 650));
+        e.guard->setState(State::GUARD_IN_PROGRESS);
+        e.guard->setSpeed(100);
+        transit<Patrolling>();
     };
 };
 
@@ -91,7 +98,10 @@ class Chase : public GuardFSM {
 //
 
 class Arrest : public GuardFSM {
-
+    void react(IntruderArrested const & e) override {
+        e.guard->setDestination(sf::Vector2f(150, 650));
+        transit<Patrolling>();
+    };
 };
 
 
@@ -100,7 +110,24 @@ class Arrest : public GuardFSM {
 //
 
 class Examination : public GuardFSM {
+    void react(EyeContact const & e) override {
+        e.guard->setTarget(e.intruder);
+        e.guard->setState(State::GUARD_DONE);
+        e.guard->setSpeed(200);
+        e.guard->resetPatrol();
+        transit<Chase>();
+    }
 
+    void react(Noise const & e) override {
+        e.guard->setDestination(e.location);
+        e.guard->setState(State::GUARD_IN_PROGRESS);
+    };
+
+    void react(NoiseChecked const & e) override {
+        e.guard->setDestination(sf::Vector2f(150, 650));
+        e.noise->setPosition(-100, 100);
+        transit<Patrolling>();
+    };
 };
 
 // ----------------------------------------------------------------------------
@@ -109,9 +136,10 @@ class Examination : public GuardFSM {
 
 class CamerasCheck : public GuardFSM {
     void react(CamerasChecked const & e) override {
-        e.guard->setState(State::IN_PROGRESS);
+        e.guard->setState(State::GUARD_IN_PROGRESS);
         if (e.intruder != nullptr) {
-            e.guard->setTarget(e.intruder->getBody());
+            e.guard->setTarget(e.intruder);
+            e.guard->setSpeed(200);
             transit<Chase>();
         } else {
             e.guard->setDestination(sf::Vector2f(150, 650));
@@ -124,20 +152,20 @@ class CamerasCheck : public GuardFSM {
 // Base state: default implementations
 //
 
-void GuardFSM::react(const EyeContact &) {
-    std::cout << "Eye contact!" << std::endl;
-}
+void GuardFSM::react(const EyeContact &) { }
 
-void GuardFSM::react(const Noise &) {
-    std::cout << "I heard something..." << std::endl;
-}
+void GuardFSM::react(const Noise &) { }
 
 void GuardFSM::react(const NewTick &) { }
 
 void GuardFSM::react(const NextPatrolSide &) { }
 
-void GuardFSM::react(const CamerasChecked &) {
-    std::cout << "I've checked all cameras" << std::endl;
-}
+void GuardFSM::react(const CamerasChecked &) { }
+
+void GuardFSM::react(const IntruderArrested &) { }
+
+void GuardFSM::react(const IntruderLost &) { }
+
+void GuardFSM::react(const NoiseChecked &) { }
 
 FSM_INITIAL_STATE(GuardFSM, Patrolling)

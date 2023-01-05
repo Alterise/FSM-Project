@@ -10,7 +10,8 @@
 class Character;
 
 bool isNear(const Character& character, sf::Vector2f location);
-
+bool isNearNoise(const Character& character, sf::Vector2f location);
+bool isInEyeSight(const Character& character1, const Character& character2);
 bool onTerritory(const Character& character);
 
 class Character{
@@ -22,7 +23,8 @@ private:
     sf::Vector2f m_position;
     float m_speed;
     float m_tickSpeed;
-    std::shared_ptr<sf::CircleShape> m_target;
+    std::shared_ptr<Character> m_target;
+    std::shared_ptr<Character> m_binded;
     int m_patrolSide;
     int m_patrolCount;
     State m_state;
@@ -34,15 +36,17 @@ public:
     void setSize(float size);
     void setPosition(const sf::Vector2f& position);
     void setDestination(const sf::Vector2f& destination);
-    void setDestinationArrest();
-    void setTarget(const sf::CircleShape &target);
+    void setTarget(const std::shared_ptr<Character> &target);
+    void setBinded(const std::shared_ptr<Character> &binded);
     void setState(State state);
     void resetTarget();
+    void resetBinded();
+    void resetPatrol();
     void setColor(const sf::Color& color);
 
     float getSize() const;
     sf::Vector2f getPosition() const;
-    std::shared_ptr<sf::CircleShape> getTarget() const;
+    std::shared_ptr<Character> getTarget() const;
     State getState() const;
     int getPatrolCount() const;
     void incrementPatrolCount();
@@ -52,6 +56,4 @@ public:
 
     void move();
     void drawSelf(const std::shared_ptr<sf::RenderWindow>& window);
-private:
-
 };
