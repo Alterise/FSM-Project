@@ -7,6 +7,12 @@
 #include <memory>
 #include <states.hpp>
 
+class Character;
+
+bool isNear(const Character& character, sf::Vector2f location);
+
+bool onTerritory(const Character& character);
+
 class Character{
 private:
     sf::CircleShape m_body;
@@ -17,7 +23,8 @@ private:
     float m_speed;
     float m_tickSpeed;
     std::shared_ptr<sf::CircleShape> m_target;
-//    int m_patrolCount;
+    int m_patrolSide;
+    int m_patrolCount;
     State m_state;
 
 public:
@@ -34,10 +41,13 @@ public:
     void setColor(const sf::Color& color);
 
     float getSize() const;
+    sf::Vector2f getPosition() const;
     std::shared_ptr<sf::CircleShape> getTarget() const;
     State getState() const;
-//    int getPatrolCount() const;
-//    void incrementPatrolCount();
+    int getPatrolCount() const;
+    void incrementPatrolCount();
+    int getPatrolSide() const;
+    void incrementPatrolSide();
     const sf::CircleShape& getBody();
 
     void move();

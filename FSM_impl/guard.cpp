@@ -15,34 +15,34 @@ class Arrest;
 //
 
 class Patrolling : public GuardFSM {
-    int patrolSide = 0;
-    int patrolCount = 0;
-
     void react(NextPatrolSide const & e) override {
-        switch (patrolSide) {
+        switch (e.guard->getPatrolSide()) {
             case 0: {
                 e.guard->setDestination(sf::Vector2f(150, 150));
+                break;
             }
             case 1: {
                 e.guard->setDestination(sf::Vector2f(650, 150));
+                break;
             }
             case 2: {
                 e.guard->setDestination(sf::Vector2f(650, 650));
+                break;
             }
             case 3: {
                 e.guard->setDestination(sf::Vector2f(150, 650));
-                patrolCount = (patrolCount + 1) % 2;
+                e.guard->incrementPatrolCount();
                 e.guard->setState(State::DONE);
+                break;
             }
         }
-
-        patrolSide = (patrolSide + 1) % 4;
+        e.guard->incrementPatrolSide();
     };
 
     void react(NewTick const & e) override {
         if (e.guard->getState() == State::DONE) {
-            e.guard->setState(State::IN_PROGRESS);
-            if (patrolCount == 0) {
+            if (e.guard->getPatrolCount() == 1) {
+                e.guard->setDestination(sf::Vector2f(50, 650));
                 transit<CamerasCheck>();
             }
         }
@@ -108,20 +108,13 @@ class Examination : public GuardFSM {
 //
 
 class CamerasCheck : public GuardFSM {
-    void react(NewTick const & e) override {
-        if (e.guard->getState() == State::DONE) {
-            e.guard->setState(State::IN_PROGRESS);
-            // ???
-            sendEvent(CamerasChecked());
-        }
-    };
-
     void react(CamerasChecked const & e) override {
-        e.guard->setState(State::DONE);
+        e.guard->setState(State::IN_PROGRESS);
         if (e.intruder != nullptr) {
             e.guard->setTarget(e.intruder->getBody());
             transit<Chase>();
         } else {
+            e.guard->setDestination(sf::Vector2f(150, 650));
             transit<Patrolling>();
         }
     };
