@@ -88,7 +88,7 @@ int main() {
 
             if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::Space) {
-                    if (intruder != nullptr) {
+                    if (intruder != nullptr && onTerritory(*intruder)) {
                         auto intruderSize = intruder->getSize();
                         auto location = intruder->getPosition() + sf::Vector2f(intruderSize / 2, intruderSize / 2);
                         noise.location = location;
