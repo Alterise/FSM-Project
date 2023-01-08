@@ -3,7 +3,6 @@
 #include <thread>
 #include <memory>
 #include <unordered_set>
-#include <iostream>
 
 #include <Character.h>
 #include <fsmlist.hpp>
@@ -166,8 +165,7 @@ int main() {
         window->clear(backgroundColor);
 
         window->draw(area);
-        window->draw(arrestArea);
-        window->draw(guardRoom);
+
         guard->move();
         if (intruder != nullptr) {
             window->draw(intruder->getBody());
@@ -179,6 +177,9 @@ int main() {
             window->draw(*noiseEffect);
             noiseState = (noiseState + 1) % 12;
         }
+
+        window->draw(arrestArea);
+        window->draw(guardRoom);
 
         window->display();
         std::this_thread::sleep_until(startTime + dt);
