@@ -17,7 +17,8 @@ std::vector<sf::Vector2f> territoryCorners = {
         sf::Vector2f(150, 650),
         sf::Vector2f(150, 150),
         sf::Vector2f(650, 150),
-        sf::Vector2f(650, 650)
+        sf::Vector2f(650, 650),
+        sf::Vector2f(150, 650)
 };
 
 int main() {

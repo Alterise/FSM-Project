@@ -139,7 +139,7 @@ int Character::getPatrolSide() const {
 }
 
 void Character::incrementPatrolSide() {
-    m_patrolSide = (m_patrolSide + 1) % 4;
+    m_patrolSide = (m_patrolSide + 1) % 5;
 }
 
 void Character::setState(const State state) {

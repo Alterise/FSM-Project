@@ -31,6 +31,9 @@ class Patrolling : public GuardFSM {
             }
             case 3: {
                 e.guard->setDestination(sf::Vector2f(150, 650));
+                break;
+            }
+            case 4: {
                 e.guard->incrementPatrolCount();
                 e.guard->setState(State::GUARD_DONE);
                 break;
